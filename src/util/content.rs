@@ -3,7 +3,7 @@ use crate::util::error::ServiceResult;
 use crate::util::types::EmailConfig;
 use aws_sdk_sesv2::primitives::Blob;
 use aws_sdk_sesv2::types::{EmailContent as SESEmailContent, RawMessage};
-use shared::error::AppError;
+use shared::error::ServiceError as SharedError;
 
 pub struct EmailContent {
     to: String,
@@ -63,15 +63,15 @@ impl EmailContentBuilder {
             .unwrap_or(&config.email_from);
 
         let Some(ref subject) = email_config.subject else {
-            return Err(AppError::HttpMessage(400, "subject is required".into()));
+            return Err(SharedError::HttpMessage(400, "subject is required".into()));
         };
 
         let Some(email_to) = self.to.as_ref() else {
-            return Err(AppError::HttpMessage(400, "email to is required".into()));
+            return Err(SharedError::HttpMessage(400, "email to is required".into()));
         };
 
         let Some(html) = self.html.as_ref() else {
-            return Err(AppError::HttpMessage(
+            return Err(SharedError::HttpMessage(
                 400,
                 "html content to is required".into(),
             ));

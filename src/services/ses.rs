@@ -2,7 +2,7 @@ use super::EmailService;
 use crate::util::config::Config;
 use crate::util::types::{SendEmailConfig, SendEmailPayload};
 
-use shared::error::AppError;
+use shared::error::ServiceError as SharedError;
 
 use crate::util::error::{Error, ServiceError, ServiceResult};
 use async_trait::async_trait;
@@ -27,7 +27,7 @@ impl EmailService for SESService {
         let mut responses = self.send_emails(vec![payload]).await;
 
         responses.pop().unwrap_or_else(|| {
-            Err(AppError::HttpMessage(
+            Err(SharedError::HttpMessage(
                 500,
                 "Failed to send email".to_string(),
             ))
@@ -42,7 +42,7 @@ impl EmailService for SESService {
 
         let mut responses = Vec::with_capacity(payloads.len());
         responses.resize_with(payloads.len(), || {
-            Err(AppError::HttpMessage(500, "not sent".into()))
+            Err(SharedError::HttpMessage(500, "not sent".into()))
         });
 
         for (i, payload) in payloads.iter().enumerate() {

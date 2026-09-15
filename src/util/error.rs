@@ -1,8 +1,8 @@
 use aws_sdk_sesv2::error::SdkError;
 use aws_sdk_sesv2::operation::send_email::SendEmailError;
-use shared::error::AppError;
+use shared::error::ServiceError as SharedError;
 
-pub type ServiceResult<T> = Result<T, AppError>;
+pub type ServiceResult<T> = Result<T, SharedError>;
 
 pub enum ServiceError {
     EmailTemplateMissing,
@@ -34,8 +34,8 @@ impl From<SdkError<SendEmailError>> for Error {
     }
 }
 
-impl Into<AppError> for Error {
-    fn into(self) -> AppError {
-        AppError::HttpMessage(self.code, self.message)
+impl Into<SharedError> for Error {
+    fn into(self) -> SharedError {
+        SharedError::HttpMessage(self.code, self.message)
     }
 }
